@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import * as _ from 'lodash';
 import ScreepsServer from './screepsServer';
 
-type Notification = { message: string; type: string; date: number; count: number; _id: string };
+interface Notification { message: string; type: string; date: number; count: number; _id: string }
 
 export interface UserBadge {
     type: number;
@@ -59,6 +59,9 @@ export default class User extends EventEmitter {
     get memory(): Promise<string> {
         const { env } = this._server.common.storage;
         return env.get(env.keys.MEMORY + this.id);
+    }
+    get memoryData(): Promise<Memory> {
+        return this.memory.then(JSON.parse.bind(null));
     }
     get notifications(): Promise<Notification[]> {
         const { db } = this._server.common.storage;

@@ -9,7 +9,6 @@
     "build": "tsc",
     "coverage": "yarn run build && nyc mocha dist/test --ui tdd --exit",
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\" \"utils/**/*.ts\"",
-    "prepare": "yarn run build",
     "prepublishOnly": "yarn test && yarn run lint",
     "test": "yarn run build && mocha dist/test --ui tdd --exit"
   },
@@ -24,12 +23,12 @@
     "@types/screeps": "^3.0.0",
     "fs-extra-promise": "^1.0.1",
     "lodash": "^4.17.19",
-    "screeps": "^4.1.5"
+    "screeps": "^4.2.19"
   },
   "peerDependencies": {
-    "@screeps/common": "^2.13.2",
-    "@screeps/driver": "^5.1.0",
-    "@screeps/engine": "^4.1.2"
+    "@screeps/common": "^2.15.5",
+    "@screeps/driver": "^5.2.5",
+    "@screeps/engine": "^4.2.22"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.1",
@@ -43,6 +42,17 @@
     "mocha": "^7.0.0",
     "npm-cli-login": "^0.1.1",
     "nyc": "^15.0.0",
-    "typescript": "^3.8.2"
+    "typescript": "^5.4.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "isolated-vm": "4.7.2",
+      "node-gyp": "10.1.0"
+    },
+    "patchedDependencies": {
+      "@screeps/driver@5.2.5": "patches/@screeps__driver@5.2.5.patch",
+      "screeps@4.2.19": "patches/screeps@4.2.19.patch",
+      "@screeps/common@2.15.5": "patches/@screeps__common@2.15.5.patch"
+    }
   }
 }

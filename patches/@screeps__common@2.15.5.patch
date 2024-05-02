@@ -1,0 +1,42 @@
+diff --git a/lib/storage.js b/lib/storage.js
+index 2da7d0048935051572c2f9c647f4163c9c5f48b9..24b5a20f9216f107a7473a9571f86f4ec20f9ee0 100644
+--- a/lib/storage.js
++++ b/lib/storage.js
+@@ -59,7 +59,7 @@ exports.pubsub = {
+     }
+ };
+ 
+-exports._connect = function storageConnect() {
++exports._connect = function storageConnect(closeHandle) {
+ 
+     if(exports._connected) {
+         return q.when();
+@@ -148,16 +148,20 @@ exports._connect = function storageConnect() {
+     defer.resolve();
+ 
+     socket.on('error', err => {
+-        console.error('Storage connection lost', err);
+-        resetDefer.resolve('reset');
+-        exports._connected = false;
+-        setTimeout(exports._connect, 1000);
++        if(closeHandle?.retry !== false){
++            console.error('Storage connection lost', err);
++            resetDefer.resolve('reset');
++            exports._connected = false;
++            setTimeout(exports._connect, 1000);
++        }
+     });
+     socket.on('end', () => {
+-        console.error('Storage connection lost');
+-        resetDefer.resolve('reset');
+-        exports._connected = false;
+-        setTimeout(exports._connect, 1000)
++        if(closeHandle?.retry !== false){
++            console.error('Storage connection lost');
++            resetDefer.resolve('reset');
++            exports._connected = false;
++            setTimeout(exports._connect, 1000)
++        }
+     });
+ 
+     return defer.promise;

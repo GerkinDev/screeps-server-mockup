@@ -34,6 +34,7 @@ export default class ScreepsServer extends EventEmitter {
     private roomsQueue?: any;
 
     private opts: ScreepServerOptions;
+    private _closeHandle = {retry: true}
 
     /*
         Constructor.
@@ -105,7 +106,7 @@ export default class ScreepsServer extends EventEmitter {
             MODFILE:      path.resolve(this.opts.path, MOD_FILE),
             STORAGE_PORT: `${this.opts.port}`,
         });
-        await new Promise((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error('Could not launch the storage process (timeout).')), 5000);
             process.on('message', (message) => {
                 if (message === 'storageLaunched') {
@@ -118,12 +119,12 @@ export default class ScreepsServer extends EventEmitter {
         try {
             const oldLog = console.log;
             console.log = _.noop; // disable console
-            await driver.connect('main');
+            await driver.connect('main', this._closeHandle);
             console.log = oldLog; // re-enable console
             this.usersQueue = await driver.queue.create('users');
             this.roomsQueue = await driver.queue.create('rooms');
             this.connected = true;
-        } catch (err) {
+        } catch (err: any) {
             throw new Error(`Error connecting to driver: ${err.stack}`);
         }
         return this;
@@ -179,6 +180,7 @@ export default class ScreepsServer extends EventEmitter {
         Start processes and connect driver.
     */
     async start() {
+        this._closeHandle.retry = true;
         // eslint-disable-next-line global-require
         this.emit('info', `Server version ${require('screeps').version}`);
         if (!this.connected) {
@@ -207,6 +209,7 @@ export default class ScreepsServer extends EventEmitter {
         Stop most processes (it is not perfect though as some remain).
     */
     stop() {
+        this._closeHandle.retry = false;
         _.each(this.processes, (process) => process.kill());
         return this;
     }

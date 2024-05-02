@@ -1,0 +1,67 @@
+diff --git a/lib/index.js b/lib/index.js
+index 62122558188115bd83f921a434bd2b9da7acac03..82eedf7410a4d2d9335520461bbe1f7885758cc6 100644
+--- a/lib/index.js
++++ b/lib/index.js
+@@ -91,11 +91,12 @@ exports.getAllTerrainData = getAllTerrainData;
+ const pathFinderFactory = require('./path-finder');
+ exports.pathFinder = pathFinderFactory.create(require('../native/build/Release/native'));
+ 
+-exports.connect = function(processType) {
++exports.connect = function(processType, closeHandle) {
++    console.log({processType, closeHandle})
+ 
+     common.configManager.load();
+ 
+-    return common.storage._connect()
++    return common.storage._connect(closeHandle)
+     .then(() => {
+ 
+         if (processType == 'runner') {
+diff --git a/native/binding.gyp b/native/binding.gyp
+index 904cfc4886455fe980e3add4def0ac3164b3eaaa..6dccfabcc3074342d2f86615dc103d57577d0625 100644
+--- a/native/binding.gyp
++++ b/native/binding.gyp
+@@ -31,12 +31,12 @@
+ 	'targets': [
+ 		{
+ 			'target_name': 'native',
+-			'cflags_cc': [ '-std=c++14', '-g' ],
++			'cflags_cc': [ '-std=c++17', '-g' ],
+ 			'cflags_cc!': [ '-fno-exceptions' ],
+ 			'xcode_settings': {
+ 				'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+ 				'GCC_GENERATE_DEBUGGING_SYMBOLS': 'YES',
+-				'CLANG_CXX_LANGUAGE_STANDARD': 'c++14',
++				'CLANG_CXX_LANGUAGE_STANDARD': 'c++17',
+ 			},
+ 			'msvs_settings': {
+ 				'VCCLCompilerTool': {
+diff --git a/native/src/pf.h b/native/src/pf.h
+index 833e6a67bc7b888faa1b83cf7ca370217c0eb4d5..cbd34651ede9a0d5c4c49a4b1852d744a2620bb2 100644
+--- a/native/src/pf.h
++++ b/native/src/pf.h
+@@ -6,6 +6,7 @@
+ #include <stdexcept>
+ #include <unordered_set>
+ #include <vector>
++#include <limits>
+ 
+ namespace screeps {
+ 	typedef uint32_t cost_t; // maximum: longest chebyshev distance of whole map
+diff --git a/package.json b/package.json
+index 0bfd8c0bd957cc152fc5ab6adbd21b918387aff2..bc2d0ad6e3317646a4a640ea0252a97ff29ed989 100644
+--- a/package.json
++++ b/package.json
+@@ -7,10 +7,10 @@
+   "license": "ISC",
+   "dependencies": {
+     "generic-pool": "^3.4.1",
+-    "isolated-vm": "^2.0.1",
++    "isolated-vm": "4.7.2",
+     "lodash": "^3.10.1",
+     "nan": "^2.14.0",
+-    "node-gyp": "^3.8.0",
++    "node-gyp": "10.1.0",
+     "q": "^1.4.1",
+     "webpack": "^3.11.0",
+     "webpack-shell-plugin": "^0.5.0"

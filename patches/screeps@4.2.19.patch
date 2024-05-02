@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index 3f46199eaf0ce18db00d42f7f1302e7e925b8d9c..ec3c7f4f4825de43d38407ee9a7e9f64141d33a4 100644
+--- a/package.json
++++ b/package.json
+@@ -7,7 +7,7 @@
+     "screeps": "bin/screeps.js"
+   },
+   "scripts": {
+-    "postinstall": "cd `node_modules` && npm explore @screeps/driver -- npx webpack"
++    "postinstall": "cd `node_modules` && npm explore @screeps/driver -- npm run build"
+   },
+   "author": "Artem Chivchalov <contact@screeps.com>",
+   "license": "ISC",

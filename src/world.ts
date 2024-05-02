@@ -4,6 +4,7 @@ import * as zlib from 'zlib';
 import TerrainMatrix from './terrainMatrix';
 import User, { UserBadge } from './user';
 import ScreepsServer from './screepsServer';
+import assert from 'assert';
 
 interface AddBotOptions {
     username: string;
@@ -82,7 +83,8 @@ export default class World {
             throw new Error(`room ${room} doesn't appear to have any terrain data`);
         }
         // Parse and return terrain data as a TerrainMatrix
-        const serial = _.get(_.first(data), 'terrain');
+        const serial = _.get(_.first(data), 'terrain') as any as string;
+        assert(typeof serial === 'string')
         return TerrainMatrix.unserialize(serial);
     }
 
